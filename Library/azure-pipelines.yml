@@ -88,7 +88,7 @@ jobs:
         inputs:
           command: pack
           projects: $(solution_path)
-          packDestination: '$(Build.ArtifactStagingDirectory)
+          packDestination: '$(Build.ArtifactStagingDirectory)'
           versioningScheme: byPrereleaseNumber
           patchVersion: '$(Build.BuildId)'
 
