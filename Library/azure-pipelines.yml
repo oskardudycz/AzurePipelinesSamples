@@ -21,10 +21,9 @@ resources:
 
 variables:
   config: Release
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
-  dotnet_core_version: 2.1.400
+  dotnet_core_version: 3.0.x
   pg_db: postgres_net_test
+  solution_path: Library/Postgres.NET.sln
 jobs:
   - job: Build
     pool:
@@ -40,16 +39,26 @@ jobs:
     services:
       postgres: $[ variables['postgresService'] ]
     steps:
-      - task: DotNetCoreInstaller@0
+      - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
+          performMultiLevelLookup: true      
+      - task: DotNetCoreCLI@2
+        displayName: Restore Packages
+        inputs:
+          command: restore
+          projects: $(solution_path')  
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: build
+          projects:$(solution_path')
+          arguments: '--configuration $(config')' 
       - script: |
           PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
           docker exec $PG_CONTAINER_NAME psql -U postgres -c "create database $(pg_db);"
         displayName: Create db
-      - script: dotnet build Library/Postgres.NET.sln
-        displayName: Build
   # Publish job will be enabled later
   # - job: Publish
   #   dependsOn: Build
