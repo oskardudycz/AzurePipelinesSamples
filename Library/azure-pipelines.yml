@@ -10,7 +10,7 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: 'Library/Postgres.NET.sln'
+  solution: 'Postgres.NET.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
