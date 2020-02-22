@@ -34,6 +34,41 @@ jobs:
   - job: Build
     pool:
       vmImage: 'ubuntu-latest'
+    # strategy:
+      # matrix:
+        # pg9.6:
+          # postgresService: pg9.6
+        # pg10:
+          # postgresService: pg10
+        # pg11:
+          # postgresService: pg11
+    steps:
+      - task: UseDotNet@2
+        displayName: Install .Net Core
+        inputs:
+          version: $(dotnet_core_version)
+          performMultiLevelLookup: true
+
+      - task: DotNetCoreCLI@2
+        displayName: Restore Packages
+        inputs:
+          command: restore
+          projects: $(solution_path)
+
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: build
+          projects: $(solution_path)
+          arguments: '--configuration $(config)'
+
+    ###################################
+    #   Test
+    ###################################
+  - job: Test
+    dependsOn: Build
+    pool:
+      vmImage: 'ubuntu-latest'
     strategy:
       matrix:
         pg9.6:
@@ -55,32 +90,19 @@ jobs:
         inputs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
-
-      - task: DotNetCoreCLI@2
-        displayName: Restore Packages
-        inputs:
-          command: restore
-          projects: $(solution_path)
-
-      - task: DotNetCoreCLI@2
-        displayName: Build
-        inputs:
-          command: build
-          projects: $(solution_path)
-          arguments: '--configuration $(config)'
-
+          
       - task: DotNetCoreCLI@2
         displayName: Test
         inputs:
           command: test
-          projects: $(solution_path)
+          projects: '$(Build.ArtifactStagingDirectory)/$(solution_path)'
           arguments: '--configuration $(config)'
 
     ###################################
     #   Publish NuGet
     ###################################
   - job: Publish_NuGet
-    dependsOn: Build
+    dependsOn: Test
     pool:
       vmImage: 'ubuntu-latest'
 
@@ -92,7 +114,6 @@ jobs:
           projects: $(solution_path)
           packDestination: '$(Build.ArtifactStagingDirectory)'
           versioningScheme: byPrereleaseNumber
-          patchVersion: '$(Build.BuildId)'
 
       - task: NuGetCommand@2
         displayName: Publish packages to NuGet
