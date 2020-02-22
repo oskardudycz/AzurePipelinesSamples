@@ -10,9 +10,8 @@ namespace Postgres.NET.Tests
                                                          ?? "Host=localhost;Port=5432;Database=postgres;Username=postgres;password=postgres";
 
         [Fact]
-        public void Test1()
+        public void CreateTable_ShouldSucceed_ForNonEmptyTableName()
         {
-
             using(var schemaUpdater = new SchemaUpdater(new NpgsqlConnection(ConnectionString)))
             {
                 schemaUpdater.CreateTable("testTable");

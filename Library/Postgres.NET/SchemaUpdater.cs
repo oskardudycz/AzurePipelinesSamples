@@ -15,7 +15,8 @@ namespace Postgres.NET
 
         public int CreateTable(string tableName)
         {
-            return this.databaseConnection.Execute("CREATE TABLE " + tableName);
+            return databaseConnection.Execute(
+                $"CREATE TABLE {tableName} ( id serial PRIMARY KEY );");
         }
 
         public void Dispose()
