@@ -21,7 +21,9 @@ resources:
 
 variables:
   config: Release
-  dotnet_core_version: 3.0.x
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  dotnet_core_version: 3.1.x
   pg_db: postgres_net_test
   solution_path: Library/Postgres.NET.sln
 jobs:
