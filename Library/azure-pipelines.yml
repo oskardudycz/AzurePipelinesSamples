@@ -1,34 +1,79 @@
-# ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+      - master
 
-pool:
-  vmImage: 'windows-latest'
+resources:
+  containers:
+    - container: pg11
+      image: ionx/postgres-plv8:11.1
+      ports:
+        - 5432:5432
+    - container: pg10
+      image: ionx/postgres-plv8:10.6
+      ports:
+        - 5432:5432
+    - container: pg9.6
+      image: mysticmind/postgres-plv8:9.6-1.4
+      ports:
+        - 5432:5432
 
 variables:
-  solution: 'Postgres.NET.sln'
-  buildPlatform: 'Any CPU'
-  buildConfiguration: 'Release'
-
-steps:
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+  config: Release
+  DOTNET_CLI_TELEMETRY_OPTOUT: 1
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  dotnet_core_version: 2.1.400
+  pg_db: postgres_net_test
+jobs:
+  - job: Build
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      matrix:
+        pg9.6:
+          postgresService: pg9.6
+        pg10:
+          postgresService: pg10
+        pg11:
+          postgresService: pg11
+    services:
+      postgres: $[ variables['postgresService'] ]
+    steps:
+      - task: DotNetCoreInstaller@0
+        displayName: Install .Net Core
+        inputs:
+          version: $(dotnet_core_version)
+      - script: |
+          PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
+          docker exec $PG_CONTAINER_NAME psql -U postgres -c "create database $(pg_db);"
+        displayName: Create db
+      - script: dotnet build
+        displayName: Build
+  # Publish job will be enabled later
+  # - job: Publish
+  #   dependsOn: Build
+  #   # run publish only if all build jobs succeed and a GitHub tag is created
+  #   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+  #   pool:
+  #     vmImage: 'ubuntu-latest'
+  #   steps:
+  #     - task: DotNetCoreInstaller@0
+  #       displayName: Install .Net Core
+  #       inputs:
+  #         version: $(dotnet_core_version)
+  #     - script: ./build.sh --no-color pack
+  #       displayName: Create NuGet Packages
+  #     - task: NuGetCommand@2
+  #       displayName: Publish packages to NuGet
+  #       inputs:
+  #         command: 'push'
+  #         nuGetFeedType: 'external'
+  #         packagesToPush: '$(Build.Repository.LocalPath)/artifacts/*.nupkg'
+  #         publishFeedCredentials: 'NuGetServiceConnection'
+  #     - task: NuGetCommand@2
+  #       displayName: Publish symbol packages to NuGet
+  #       inputs:
+  #         command: 'push'
+  #         packagesToPush: '$(Build.Repository.LocalPath)/artifacts/*.snupkg'
+  #         publishFeedCredentials: 'NuGetServiceConnection'
