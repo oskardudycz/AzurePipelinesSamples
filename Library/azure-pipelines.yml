@@ -45,56 +45,52 @@ jobs:
           PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
           docker exec $PG_CONTAINER_NAME psql -U postgres -c "create database $(pg_db);"
         displayName: Create db
-          
+
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
-          performMultiLevelLookup: true   
-          
+          performMultiLevelLookup: true
+
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
         inputs:
           command: restore
           projects: $(solution_path)
-          
+
       - task: DotNetCoreCLI@2
         displayName: Build
         inputs:
           command: build
           projects: $(solution_path)
           arguments: '--configuration $(config)'
-          
+
       - task: DotNetCoreCLI@2
         displayName: Test
         inputs:
           command: test
           projects: $(solution_path)
           arguments: '--configuration $(config)'
-  # Publish job will be enabled later
-  # - job: Publish
-  #   dependsOn: Build
-  #   # run publish only if all build jobs succeed and a GitHub tag is created
-  #   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
-  #   pool:
-  #     vmImage: 'ubuntu-latest'
-  #   steps:
-  #     - task: DotNetCoreInstaller@0
-  #       displayName: Install .Net Core
-  #       inputs:
-  #         version: $(dotnet_core_version)
-  #     - script: ./build.sh --no-color pack
-  #       displayName: Create NuGet Packages
-  #     - task: NuGetCommand@2
-  #       displayName: Publish packages to NuGet
-  #       inputs:
-  #         command: 'push'
-  #         nuGetFeedType: 'external'
-  #         packagesToPush: '$(Build.Repository.LocalPath)/artifacts/*.nupkg'
-  #         publishFeedCredentials: 'NuGetServiceConnection'
-  #     - task: NuGetCommand@2
-  #       displayName: Publish symbol packages to NuGet
-  #       inputs:
-  #         command: 'push'
-  #         packagesToPush: '$(Build.Repository.LocalPath)/artifacts/*.snupkg'
-  #         publishFeedCredentials: 'NuGetServiceConnection'
+
+      - task: DotNetCoreCLI@2
+        displayName: Pack
+        inputs:
+          command: pack
+          projects: $(solution_path)
+          arguments: '--configuration $(config) -p:Version=1.0.$(Build.BuildId) -o $(Build.ArtifactStagingDirectory)'
+
+      - task: NuGetCommand@2
+        displayName: Publish packages to NuGet
+        inputs:
+          command: 'push'
+          nuGetFeedType: 'external'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+          publishFeedCredentials: 'NuGet'
+
+      - task: NuGetCommand@2
+        displayName: Publish symbol packages to NuGet
+        inputs:
+            command: 'push'
+            nuGetFeedType: 'external'
+            packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+            publishFeedCredentials: 'NuGet'
