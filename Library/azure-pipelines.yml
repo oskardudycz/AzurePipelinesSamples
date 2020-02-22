@@ -27,6 +27,9 @@ variables:
   pg_db: postgres_net_test
   solution_path: Library/Postgres.NET.sln
 jobs:
+    ###################################
+    #   Build
+    ###################################
   - job: Build
     pool:
       vmImage: 'ubuntu-latest'
@@ -72,12 +75,21 @@ jobs:
           projects: $(solution_path)
           arguments: '--configuration $(config)'
 
+    ###################################
+    #   Publish NuGet
+    ###################################
+    - job: Publish NuGet
+      pool:
+          vmImage: 'ubuntu-latest'
+
       - task: DotNetCoreCLI@2
         displayName: Pack
         inputs:
           command: pack
           projects: $(solution_path)
-          arguments: '--configuration $(config) -p:Version=1.0.$(Build.BuildId) -o $(Build.ArtifactStagingDirectory)'
+          packDestination: '$(Build.ArtifactStagingDirectory)
+          versioningScheme: byPrereleaseNumber
+          patchVersion: '$(Build.BuildId)'
 
       - task: NuGetCommand@2
         displayName: Publish packages to NuGet
