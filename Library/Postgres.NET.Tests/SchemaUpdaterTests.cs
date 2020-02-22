@@ -12,11 +12,9 @@ namespace Postgres.NET.Tests
         [Fact]
         public void CreateTable_ShouldSucceed_ForNonEmptyTableName()
         {
-            using(var schemaUpdater = new SchemaUpdater(new NpgsqlConnection(ConnectionString)))
-            {
-                schemaUpdater.CreateTable("testTable");
-            }
-            Assert.True(true);
+            using var schemaUpdater = new SchemaUpdater(new NpgsqlConnection(ConnectionString));
+            
+            Assert.NotEqual(0, schemaUpdater.CreateTable("testTable"));
         }
     }
 }
