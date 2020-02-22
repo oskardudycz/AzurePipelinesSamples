@@ -78,7 +78,7 @@ jobs:
     ###################################
     #   Publish NuGet
     ###################################
-  - job: Publish NuGet
+  - job: Publish_NuGet
     pool:
       vmImage: 'ubuntu-latest'
 
