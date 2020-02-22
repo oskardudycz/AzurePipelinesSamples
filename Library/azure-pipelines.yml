@@ -78,10 +78,11 @@ jobs:
     ###################################
     #   Publish NuGet
     ###################################
-    - job: Publish NuGet
-      pool:
-          vmImage: 'ubuntu-latest'
+  - job: Publish NuGet
+    pool:
+      vmImage: 'ubuntu-latest'
 
+    steps:
       - task: DotNetCoreCLI@2
         displayName: Pack
         inputs:
