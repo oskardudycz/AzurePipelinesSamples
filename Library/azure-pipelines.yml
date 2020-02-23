@@ -190,9 +190,9 @@ jobs:
       vmImage: 'ubuntu-16.04'
 
     steps:
-      - template: steps-compatibility-check.yml  # Template reference
-        parameters:
-          repositoryUrl: $(repositoryUrl)
-          dotnet_core_version: $(dotnet_core_version)
-          solution_path: $(path)
-          config: $(config)
+    - template: steps-compatibility-check.yml  # Template reference
+      parameters:
+        repositoryUrl: $(repositoryUrl)
+        dotnet_core_version: $(dotnet_core_version)
+        solution_path: $(path)
+        config: $(config)
