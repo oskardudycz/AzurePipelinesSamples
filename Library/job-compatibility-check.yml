@@ -1,0 +1,12 @@
+parameters:
+- name: 'repository'
+  type: object
+  default: {}
+
+jobs:
+- job: build  
+  pool:
+    vmImage: 'ubuntu-16.04'
+   
+  steps:
+    - checkout: repository

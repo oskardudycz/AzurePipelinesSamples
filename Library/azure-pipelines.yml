@@ -18,7 +18,7 @@ resources:
       image: mysticmind/postgres-plv8:9.6-1.4
       ports:
         - 5432:5432
-  
+
   repositories:
     - repository: Client1Repo # The name used to reference this repository in the checkout step
       type: github
@@ -150,7 +150,7 @@ jobs:
         inputs:
           artifactName: BuiltSourceCode
           downloadPath: $(Build.SourcesDirectory)
-          
+
       - task: DotNetCoreCLI@2
         displayName: Pack
         inputs:
@@ -181,10 +181,17 @@ jobs:
     ###################################
   - job: Verify_compatibility
     dependsOn: Publish_NuGet
-    
+
+    strategy:
+      matrix:
+        client1:
+          repository: Client1Repo
+        client2:
+          repository: Client2Repo
+
     pool:
       vmImage: 'ubuntu-16.04'
 
     steps:
-      - checkout: Client1Repo
-            
+      - checkout: $(repository)
+
