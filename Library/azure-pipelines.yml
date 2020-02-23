@@ -18,6 +18,16 @@ resources:
       image: mysticmind/postgres-plv8:9.6-1.4
       ports:
         - 5432:5432
+  
+  repositories:
+    - repository: Client1Repo # The name used to reference this repository in the checkout step
+      type: github
+      endpoint: oskardudycz
+      name: oskardudycz/AzurePipelinesSample
+    - repository: Client2Repo # The name used to reference this repository in the checkout step
+      type: github
+      endpoint: oskardudycz
+      name: oskardudycz/AzurePipelinesSample
 
 variables:
   config: Release
@@ -128,17 +138,6 @@ jobs:
     ###################################
   - job: Publish_NuGet
     dependsOn: Test
-    
-    resources:
-      repositories:
-      - repository: Client1Repo # The name used to reference this repository in the checkout step
-        type: github
-        endpoint: oskardudycz
-        name: oskardudycz/AzurePipelinesSample
-      - repository: Client2Repo # The name used to reference this repository in the checkout step
-        type: github
-        endpoint: oskardudycz
-        name: oskardudycz/AzurePipelinesSample
     
     pool:
       vmImage: 'ubuntu-16.04'
