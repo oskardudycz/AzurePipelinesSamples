@@ -61,12 +61,12 @@ jobs:
           command: build
           projects: $(solution_path)
           arguments: '--configuration $(config)'
-      
+
       - task: CopyFiles@2
         inputs:
           contents: '**'
-          targetFolder: '$(System.DefaultWorkingDirectory)'
-        
+          targetFolder: $(System.DefaultWorkingDirectory)
+
       - task: PublishBuildArtifacts@1
         inputs:
           pathToPublish: $(Build.DefaultWorkingDirectory)
@@ -91,13 +91,13 @@ jobs:
       postgres: $[ variables['postgresService'] ]
     steps:
       - checkout: none #skip checking out the default repository resource
-      
+
       - task: DownloadBuildArtifacts@0
         displayName: 'Download Built Source Code'
         inputs:
           artifactName: BuiltSourceCode
           downloadPath: $(System.DefaultWorkingDirectory)
-          
+
       - script: |
           PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
           docker exec $PG_CONTAINER_NAME psql -U postgres -c "create database $(pg_db);"
@@ -108,7 +108,7 @@ jobs:
         inputs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
-          
+
       - task: DotNetCoreCLI@2
         displayName: Test
         inputs:
