@@ -31,6 +31,8 @@ variables:
   patch: $[counter(variables['minor'], 0)] #this will reset when we bump minor
   NugetVersion: $(major).$(minor).$(patch)
   AlphaNugetVersion: $(major).$(minor).$(patch)-alpha.1
+  
+  
 jobs:
     ###################################
     #   Build
@@ -180,32 +182,37 @@ jobs:
     strategy:
       matrix:
         linux:
+          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          other: 'Clients/Client1'
+          projectPath: 'Clients/Client1/Client1.sln'
         mac:
+          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          other: 'Clients/Client2'
+          projectPath: 'Clients/Client2/Client2.sln'
     pool:
       vmImage: $(imageName)
     steps:
-      - checkout: self
+      - checkout: none
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
 
+      - script: |
+         dotnet add package Postgres.NET -v $(AlphaNugetVersion)
+         
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
         inputs:
           command: restore
-          projects: $(solution_path)
+          projects: 'Library/$(projectPath)'
 
       - task: DotNetCoreCLI@2
         displayName: Build
         inputs:
           command: build
-          projects: $(solution_path)
+          projects: 'Library/$(projectPath)'
           arguments: '--configuration $(config) --no-restore'
 
   # - job: Verify_compatibility
