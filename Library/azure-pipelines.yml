@@ -96,7 +96,7 @@ jobs:
         displayName: 'Download Built Source Code'
         inputs:
           artifactName: BuiltSourceCode
-          downloadPath: $(System.DefaultWorkingDirectory)
+          downloadPath: $(Build.SourcesDirectory)
 
       - script: |
           PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
