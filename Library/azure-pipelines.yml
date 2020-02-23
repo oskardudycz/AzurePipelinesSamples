@@ -1,3 +1,4 @@
+name: $(BuildDefinitionName)_$(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 trigger:
   batch: true
   branches:
@@ -18,16 +19,6 @@ resources:
       image: mysticmind/postgres-plv8:9.6-1.4
       ports:
         - 5432:5432
-
-  repositories:
-    - repository: Client1Repo # The name used to reference this repository in the checkout step
-      type: github
-      endpoint: oskardudycz
-      name: oskardudycz/AzurePipelinesSamples
-    - repository: Client2Repo # The name used to reference this repository in the checkout step
-      type: github
-      endpoint: oskardudycz
-      name: oskardudycz/AzurePipelinesSamples
 
 variables:
   config: Release
@@ -185,9 +176,11 @@ jobs:
     strategy:
       matrix:
         client1:
-          repositoryToCheckout: 'Client1Repo'
+          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
+          path: Clients/Client1
         client2:
-          repositoryToCheckout: 'Client2Repo'
+          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
+          path: Clients/Client2
 
     pool:
       vmImage: 'ubuntu-16.04'
@@ -195,4 +188,7 @@ jobs:
     steps:
       - template: steps-compatibility-check.yml  # Template reference
         parameters:
-          repository: '$(repositoryToCheckout)'
+          repositoryUrl: $(repositoryUrl)
+          dotnet_core_version: $(dotnet_core_version)
+          solution_path: $(path)
+          config: $(config)

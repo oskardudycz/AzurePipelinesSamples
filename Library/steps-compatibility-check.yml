@@ -1,7 +1,33 @@
 parameters:
-- name: 'repository'
+- name: 'repositoryUrl'
   type: string
-  default: 'self'
+
+- name: 'dotnet_core_version'
+  type: string
+
+- name: 'solution_path'
+  type: string
+
+- name: 'config'
+  type: string
 
 steps:
-  - script: 'git clone https://github.com/oskardudycz/AzurePipelinesSamples.git'
+
+  - task: UseDotNet@2
+    displayName: Install .Net Core
+    inputs:
+      version: $(dotnet_core_version)
+      performMultiLevelLookup: true
+
+   - task: DotNetCoreCLI@2
+     displayName: Restore Packages
+     inputs:
+       command: restore
+       projects: $(solution_path)
+
+   - task: DotNetCoreCLI@2
+     displayName: Build
+     inputs:
+       command: build
+       projects: $(solution_path)
+       arguments: '--configuration $(config) --no-restore'
