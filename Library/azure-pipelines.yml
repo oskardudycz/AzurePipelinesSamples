@@ -185,9 +185,9 @@ jobs:
     strategy:
       matrix:
         client1:
-          repository: Client1Repo
+          repository: 'Client1Repo'
         client2:
-          repository: Client2Repo
+          repository: 'Client2Repo'
 
     pool:
       vmImage: 'ubuntu-16.04'
