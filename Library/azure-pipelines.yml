@@ -174,23 +174,56 @@ jobs:
     ###################################
     #   Verify compatibility
     ###################################
+  
   - job: Verify_compatibility
-    dependsOn: Publish_NuGet
     strategy:
       matrix:
-        client1:
-          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          path: 'Clients/Client1'
+        linux:
           imageName: 'ubuntu-16.04'
-        client2:
-          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          path: 'Clients/Client2'
+        mac:
+          imageName: 'ubuntu-16.04'
+        windows:
           imageName: 'ubuntu-16.04'
     pool:
       vmImage: $(imageName)
     steps:
-      - checkout: none #skip checking out the default repository resource
+      - checkout: self
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
+          performMultiLevelLookup: true
+
+      - task: DotNetCoreCLI@2
+        displayName: Restore Packages
+        inputs:
+          command: restore
+          projects: $(solution_path)
+
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: build
+          projects: $(solution_path)
+          arguments: '--configuration $(config) --no-restore'
+
+  # - job: Verify_compatibility
+    # dependsOn: Publish_NuGet
+    # strategy:
+      # matrix:
+        # client1:
+          # repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
+          # path: 'Clients/Client1'
+          # imageName: 'ubuntu-16.04'
+        # client2:
+          # repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
+          # path: 'Clients/Client2'
+          # imageName: 'ubuntu-16.04'
+    # pool:
+      # vmImage: $(imageName)
+    # steps:
+      # - checkout: none #skip checking out the default repository resource
+      # - task: UseDotNet@2
+        # displayName: Install .Net Core
+        # inputs:
+          # version: $(dotnet_core_version)
