@@ -181,16 +181,16 @@ jobs:
     dependsOn: Publish_NuGet
     strategy:
       matrix:
-        linux:
+        client1:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          projectPath: 'Clients/Client1/Client1/Client1.csproj'
-          solutionPath: 'Clients/Client1/Client1.sln'
-        mac:
+          clientProjectPath: 'Library/Clients/Client1/Client1/Client1.csproj'
+          clientSolutionPath: 'Clients/Client1/Client1.sln'
+        client2:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          projectPath: 'Clients/Client2/Client2/Client2.csproj'
-          solutionPath: 'Clients/Client2/Client2.sln'
+          projectPath: 'Library/Clients/Client2/Client2/Client2.csproj'
+          clientSolutionPath: 'Clients/Client2/Client2.sln'
     pool:
       vmImage: $(imageName)
     steps:
@@ -202,19 +202,19 @@ jobs:
           performMultiLevelLookup: true
 
       - script: |
-         dotnet add $(projectPath) package Postgres.NET -v $(AlphaNugetVersion)
+         dotnet add $(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
          
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
         inputs:
           command: restore
-          projects: 'Library/$(solutionPath)'
+          projects: $(clientSolutionPath)
 
       - task: DotNetCoreCLI@2
         displayName: Build
         inputs:
           command: build
-          projects: 'Library/$(solutionPath)'
+          projects: $(clientSolutionPath)
           arguments: '--configuration $(config) --no-restore'
 
   # - job: Verify_compatibility
