@@ -53,6 +53,7 @@ jobs:
     pool:
       vmImage: $(imageName)
     steps:
+      - checkout: self
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
