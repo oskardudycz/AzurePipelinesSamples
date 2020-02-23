@@ -64,7 +64,9 @@ jobs:
 
       - task: CopyFiles@2
         inputs:
-          contents: '**'
+          contents:  |
+            **
+            !.git/**/*
           targetFolder: $(Build.ArtifactStagingDirectory)
 
       - task: PublishBuildArtifacts@1
@@ -113,7 +115,7 @@ jobs:
         displayName: Test
         inputs:
           command: test
-          projects: '$(Build.ArtifactStagingDirectory)/$(solution_path)'
+          projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           arguments: '--configuration $(config)'
 
     ###################################
