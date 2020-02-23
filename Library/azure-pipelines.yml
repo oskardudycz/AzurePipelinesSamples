@@ -195,4 +195,4 @@ jobs:
     steps:
       - template: steps-compatibility-check.yml  # Template reference
         parameters:
-          repository: $(repositoryToCheckout)
+          repository: '$(repositoryToCheckout)'
