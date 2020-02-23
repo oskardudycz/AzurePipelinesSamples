@@ -153,7 +153,7 @@ jobs:
           arguments: '--configuration $(config)'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           versioningScheme: 'byEnvVar'
-          versionEnvVar: 'NugetVersion'
+          versionEnvVar: 'AlphaNugetVersion'
 
       - task: NuGetCommand@2
         displayName: Publish packages to NuGet
