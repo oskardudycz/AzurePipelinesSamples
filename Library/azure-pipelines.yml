@@ -19,7 +19,7 @@ resources:
       ports:
         - 5432:5432
 
-  a:
+  repositories:
     - repository: Client1Repo # The name used to reference this repository in the checkout step
       type: github
       endpoint: oskardudycz
