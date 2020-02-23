@@ -181,10 +181,10 @@ jobs:
       matrix:
         linux:
           imageName: 'ubuntu-16.04'
-          other: 'something'
+          other: 'Clients/Client1'
         mac:
           imageName: 'ubuntu-16.04'
-          other: 'something'
+          other: 'Clients/Client2'
     pool:
       vmImage: $(imageName)
     steps:
