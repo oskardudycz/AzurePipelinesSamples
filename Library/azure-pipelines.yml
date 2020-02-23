@@ -155,7 +155,6 @@ jobs:
         displayName: Pack
         inputs:
           command: pack
-          nobuild: true
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           versioningScheme: byPrereleaseNumber
