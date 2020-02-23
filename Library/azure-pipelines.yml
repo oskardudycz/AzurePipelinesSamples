@@ -176,6 +176,7 @@ jobs:
     ###################################
   
   - job: Verify_compatibility
+    dependsOn: Publish_NuGet
     strategy:
       matrix:
         linux:
