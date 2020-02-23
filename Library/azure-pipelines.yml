@@ -202,7 +202,7 @@ jobs:
           performMultiLevelLookup: true
 
       - script: |
-         dotnet add $(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
+         dotnet add $(Build.SourcesDirectory)/$(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
          
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
@@ -216,24 +216,3 @@ jobs:
           command: build
           projects: $(clientSolutionPath)
           arguments: '--configuration $(config) --no-restore'
-
-  # - job: Verify_compatibility
-    # dependsOn: Publish_NuGet
-    # strategy:
-      # matrix:
-        # client1:
-          # repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          # path: 'Clients/Client1'
-          # imageName: 'ubuntu-16.04'
-        # client2:
-          # repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          # path: 'Clients/Client2'
-          # imageName: 'ubuntu-16.04'
-    # pool:
-      # vmImage: $(imageName)
-    # steps:
-      # - checkout: none #skip checking out the default repository resource
-      # - task: UseDotNet@2
-        # displayName: Install .Net Core
-        # inputs:
-          # version: $(dotnet_core_version)
