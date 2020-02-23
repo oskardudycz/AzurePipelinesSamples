@@ -14,6 +14,8 @@ Azure Pipeline Samples
 
 4. Publish NuGet package
 - https://docs.microsoft.com/en-us/azure/devops/pipelines/artifacts/nuget?view=azure-devops&tabs=yaml
+- https://stevenknox.net/auto-versioning-nuget-packages-in-azure-devops-pipelines/
+- https://kasunkodagoda.com/2019/04/03/hidden-gems-in-azure-pipelines-creating-your-own-rev-variable-using-counter-expression-in-azure-pipelines/
 
 5. Multi-platform build pipeline
 - https://docs.microsoft.com/en-us/azure/devops/pipelines/get-started-multiplatform?view=azure-devops
