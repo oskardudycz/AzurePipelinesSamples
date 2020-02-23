@@ -19,15 +19,15 @@ steps:
       version: $(dotnet_core_version)
       performMultiLevelLookup: true
 
-   - task: DotNetCoreCLI@2
-     displayName: Restore Packages
-     inputs:
-       command: restore
-       projects: $(solution_path)
+  - task: DotNetCoreCLI@2
+    displayName: Restore Packages
+    inputs:
+      command: restore
+      projects: $(solution_path)
 
-   - task: DotNetCoreCLI@2
-     displayName: Build
-     inputs:
-       command: build
-       projects: $(solution_path)
-       arguments: '--configuration $(config) --no-restore'
+  - task: DotNetCoreCLI@2
+    displayName: Build
+    inputs:
+      command: build
+      projects: $(solution_path)
+      arguments: '--configuration $(config) --no-restore'
