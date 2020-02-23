@@ -181,8 +181,10 @@ jobs:
       matrix:
         linux:
           imageName: 'ubuntu-16.04'
+          other: 'something'
         mac:
           imageName: 'ubuntu-16.04'
+          other: 'something'
     pool:
       vmImage: $(imageName)
     steps:
