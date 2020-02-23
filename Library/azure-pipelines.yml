@@ -61,6 +61,22 @@ jobs:
           command: build
           projects: $(solution_path)
           arguments: '--configuration $(config)'
+      
+      - task: CopyFiles@2
+        inputs:
+          contents: **
+          targetFolder: '$(System.DefaultWorkingDirectory)'
+          
+          
+      - task: CopyFiles@2
+        inputs:
+          contents: '**'
+          targetFolder: $(Build.ArtifactStagingDirectory)
+        
+      - task: PublishBuildArtifacts@1
+        inputs:
+          pathToPublish: $(Build.DefaultWorkingDirectory)
+          artifactName: BuiltSourceCode
 
     ###################################
     #   Test
@@ -80,6 +96,14 @@ jobs:
     services:
       postgres: $[ variables['postgresService'] ]
     steps:
+      - checkout: none #skip checking out the default repository resource
+      
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download Built Source Code'
+        inputs:
+          artifactName: BuiltSourceCode
+          downloadPath: $(System.DefaultWorkingDirectory)
+          
       - script: |
           PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
           docker exec $PG_CONTAINER_NAME psql -U postgres -c "create database $(pg_db);"
