@@ -124,44 +124,25 @@ jobs:
           arguments: '--configuration $(config)'
 
     ###################################
-    #   Publish NuGet
+    #   Verify compatibility
     ###################################
   - job: Publish_NuGet
     dependsOn: Test
+    
+    resources:
+      repositories:
+      - repository: Client1Repo # The name used to reference this repository in the checkout step
+        type: github
+        endpoint: oskardudycz
+        name: oskardudycz/AzurePipelinesSample
+      - repository: Client2Repo # The name used to reference this repository in the checkout step
+        type: github
+        endpoint: oskardudycz
+        name: oskardudycz/AzurePipelinesSample
+    
     pool:
       vmImage: 'ubuntu-16.04'
 
     steps:
-      - checkout: none #skip checking out the default repository resource
-
-      - task: DownloadBuildArtifacts@0
-        displayName: 'Download Built Source Code'
-        inputs:
-          artifactName: BuiltSourceCode
-          downloadPath: $(Build.SourcesDirectory)
-          
-      - task: DotNetCoreCLI@2
-        displayName: Pack
-        inputs:
-          command: pack
-          nobuild: true
-          projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          packDestination: '$(Build.ArtifactStagingDirectory)'
-          versioningScheme: byPrereleaseNumber
-          arguments: '--configuration $(config)'
-
-      - task: NuGetCommand@2
-        displayName: Publish packages to NuGet
-        inputs:
-          command: 'push'
-          nuGetFeedType: 'external'
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-          publishFeedCredentials: 'NuGet'
-
-      - task: NuGetCommand@2
-        displayName: Publish symbol packages to NuGet
-        inputs:
-            command: 'push'
-            nuGetFeedType: 'external'
-            packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
-            publishFeedCredentials: 'NuGet'
+      - checkout: Client1Repo
+            
