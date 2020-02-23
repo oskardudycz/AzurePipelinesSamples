@@ -4,4 +4,4 @@ parameters:
   default: 'self'
 
 steps:
-  - checkout: ${{ parameters.repository }}
+  - script: 'git clone https://github.com/oskardudycz/AzurePipelinesSamples.git'
