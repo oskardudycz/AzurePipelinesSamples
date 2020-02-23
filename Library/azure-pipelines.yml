@@ -185,13 +185,14 @@ jobs:
     strategy:
       matrix:
         client1:
-          repository: 'Client1Repo'
+          repositoryToCheckout: 'Client1Repo'
         client2:
-          repository: 'Client2Repo'
+          repositoryToCheckout: 'Client2Repo'
 
     pool:
       vmImage: 'ubuntu-16.04'
 
     steps:
-      - checkout: variables['repository']
-
+      - template: templates/npm-steps.yml  # Template reference
+        parameters:
+          repository: $(repositoryToCheckout)

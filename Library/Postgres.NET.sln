@@ -7,6 +7,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{FDD1FE51-B834-46F3-AC9C-4E857E40C629}"
 ProjectSection(SolutionItems) = preProject
 	azure-pipelines.yml = azure-pipelines.yml
+	job-compatibility-check.yml = job-compatibility-check.yml
 EndProjectSection
 EndProject
 Global

@@ -1,12 +1,7 @@
 parameters:
 - name: 'repository'
-  type: object
-  default: {}
+  type: string
+  default: 'self'
 
-jobs:
-- job: build  
-  pool:
-    vmImage: 'ubuntu-16.04'
-   
-  steps:
-    - checkout: repository
+steps:
+  - checkout: ${{ parameters.repository }}
