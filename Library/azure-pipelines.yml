@@ -184,11 +184,13 @@ jobs:
         linux:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          projectPath: 'Clients/Client1/Client1.sln'
+          projectPath: 'Clients/Client1/Client1/Client1.csproj'
+          solutionPath: 'Clients/Client1/Client1.sln'
         mac:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          projectPath: 'Clients/Client2/Client2.sln'
+          projectPath: 'Clients/Client2/Client2/Client2.csproj'
+          solutionPath: 'Clients/Client2/Client2.sln'
     pool:
       vmImage: $(imageName)
     steps:
@@ -200,19 +202,19 @@ jobs:
           performMultiLevelLookup: true
 
       - script: |
-         dotnet add package Postgres.NET -v $(AlphaNugetVersion)
+         dotnet add $(projectPath) package Postgres.NET -v $(AlphaNugetVersion)
          
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
         inputs:
           command: restore
-          projects: 'Library/$(projectPath)'
+          projects: 'Library/$(solutionPath)'
 
       - task: DotNetCoreCLI@2
         displayName: Build
         inputs:
           command: build
-          projects: 'Library/$(projectPath)'
+          projects: 'Library/$(solutionPath)'
           arguments: '--configuration $(config) --no-restore'
 
   # - job: Verify_compatibility
