@@ -127,11 +127,19 @@ jobs:
       vmImage: 'ubuntu-latest'
 
     steps:
+      - checkout: none #skip checking out the default repository resource
+
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download Built Source Code'
+        inputs:
+          artifactName: BuiltSourceCode
+          downloadPath: $(Build.SourcesDirectory)
+          
       - task: DotNetCoreCLI@2
         displayName: Pack
         inputs:
           command: pack
-          projects: $(solution_path)
+          projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           versioningScheme: byPrereleaseNumber
 
