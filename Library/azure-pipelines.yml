@@ -187,6 +187,7 @@ jobs:
     pool:
       vmImage: 'ubuntu-16.04'
     steps:
+      - checkout: none #skip checking out the default repository resource
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
