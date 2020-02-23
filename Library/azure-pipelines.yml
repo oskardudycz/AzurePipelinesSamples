@@ -22,12 +22,15 @@ resources:
 
 variables:
   config: Release
-  DOTNET_CLI_TELEMETRY_OPTOUT: 1
-  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   dotnet_core_version: 3.1.x
   pg_db: postgres_net_test
   testing_database: "Host=localhost;Port=5432;Database=postgres_net_test;Username=postgres;Password=Password12!"
   solution_path: Library/Postgres.NET.sln
+  major: 1
+  minor: 0
+  patch: $[counter(variables['minor'], 0)] #this will reset when we bump minor
+  NugetVersion: $(major).$(minor).$(patch)
+  AlphaNugetVersion: $(major).$(minor).$(patch)-alpha.1
 jobs:
     ###################################
     #   Build
@@ -147,9 +150,10 @@ jobs:
         inputs:
           command: pack
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          packDestination: '$(Build.ArtifactStagingDirectory)'
-          versioningScheme: byBuildNumber
           arguments: '--configuration $(config)'
+          packDestination: '$(Build.ArtifactStagingDirectory)'
+          versioningScheme: 'byEnvVar'
+          versionEnvVar: 'NugetVersion'
 
       - task: NuGetCommand@2
         displayName: Publish packages to NuGet
@@ -162,10 +166,10 @@ jobs:
       - task: NuGetCommand@2
         displayName: Publish symbol packages to NuGet
         inputs:
-            command: 'push'
-            nuGetFeedType: 'external'
-            packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
-            publishFeedCredentials: 'NuGet'
+          command: 'push'
+          nuGetFeedType: 'external'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+          publishFeedCredentials: 'NuGet'
 
     ###################################
     #   Verify compatibility
