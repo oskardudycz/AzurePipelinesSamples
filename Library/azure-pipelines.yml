@@ -60,9 +60,10 @@ jobs:
         inputs:
           command: build
           projects: $(solution_path)
-          arguments: '--configuration $(config)'
+          arguments: '--configuration $(config) --no-restore'
 
       - task: CopyFiles@2
+        displayName: Copy Built Source Code
         inputs:
           contents:  |
             **
@@ -70,6 +71,7 @@ jobs:
           targetFolder: $(Build.ArtifactStagingDirectory)
 
       - task: PublishBuildArtifacts@1
+        displayName: Publish Built Source Code
         inputs:
           pathToPublish: $(Build.ArtifactStagingDirectory)
           artifactName: BuiltSourceCode
@@ -115,6 +117,7 @@ jobs:
         displayName: Test
         inputs:
           command: test
+          nobuild: true
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           arguments: '--configuration $(config)'
 
@@ -139,9 +142,11 @@ jobs:
         displayName: Pack
         inputs:
           command: pack
+          nobuild: true
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           versioningScheme: byPrereleaseNumber
+          arguments: '--configuration $(config)'
 
       - task: NuGetCommand@2
         displayName: Publish packages to NuGet
