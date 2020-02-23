@@ -195,6 +195,8 @@ jobs:
       vmImage: $(imageName)
     steps:
       - checkout: none
+      - script: |
+         git clone $(repositoryUrl)
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
