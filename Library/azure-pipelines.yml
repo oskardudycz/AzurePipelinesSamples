@@ -203,6 +203,10 @@ jobs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
 
+      - task: Delay@1
+        inputs:
+          delayForMinutes: '2' 
+          
       - script: |
          dotnet add $(Build.SourcesDirectory)/$(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
          
