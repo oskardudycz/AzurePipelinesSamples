@@ -32,13 +32,14 @@ jobs:
     #   Build
     ###################################
   - job: Build
-    matrix:
-      linux:
-        imageName: 'ubuntu-16.04'
-      mac:
-        imageName: 'macos-10.14'
-      windows:
-        imageName: 'vs2017-win2016'
+    strategy:
+      matrix:
+        linux:
+          imageName: 'ubuntu-16.04'
+        mac:
+          imageName: 'macos-10.14'
+        windows:
+          imageName: 'vs2017-win2016'
     pool:
       vmImage: $(imageName)
     steps:
@@ -83,7 +84,7 @@ jobs:
   - job: Test
     dependsOn: Build
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-16.04'
     strategy:
       matrix:
         pg9.6:
@@ -128,7 +129,7 @@ jobs:
   - job: Publish_NuGet
     dependsOn: Test
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-16.04'
 
     steps:
       - checkout: none #skip checking out the default repository resource

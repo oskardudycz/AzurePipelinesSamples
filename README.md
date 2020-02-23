@@ -18,4 +18,6 @@ Azure Pipeline Samples
 
 5. Copy files between jobs:
 - https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/copy-files?view=azure-devops&tabs=yaml
-- 
+
+6. Conditions:
+- https://docs.microsoft.com/en-us/azure/devops/pipelines/process/conditions?view=azure-devops&tabs=yaml
