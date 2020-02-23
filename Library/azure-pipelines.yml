@@ -64,14 +64,8 @@ jobs:
       
       - task: CopyFiles@2
         inputs:
-          contents: **
-          targetFolder: '$(System.DefaultWorkingDirectory)'
-          
-          
-      - task: CopyFiles@2
-        inputs:
           contents: '**'
-          targetFolder: $(Build.ArtifactStagingDirectory)
+          targetFolder: '$(System.DefaultWorkingDirectory)'
         
       - task: PublishBuildArtifacts@1
         inputs:
