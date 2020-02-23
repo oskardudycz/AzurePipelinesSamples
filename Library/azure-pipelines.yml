@@ -193,3 +193,5 @@ jobs:
         dotnet_core_version: $(dotnet_core_version)
         solution_path: $(path)
         config: $(config)
+        nugetName: 'Postgres.NET'
+        nugetVersion: ${AlphaNugetVersion}

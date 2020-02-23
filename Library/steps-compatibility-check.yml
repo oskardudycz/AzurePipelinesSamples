@@ -10,27 +10,29 @@ parameters:
 
 - name: 'config'
   type: string
+  
+- name: 'nugetName'
+  type: string
+
+- name: 'nugetVersion'
+  type: string
 
 steps:
-# - ${{ if eq(parameters.toolset, 'dotnet') }}:
   - task: UseDotNet@2
     displayName: Install .Net Core
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
     inputs:
       version: $(dotnet_core_version)
-      performMultiLevelLookup: true
+  - script: |
+         dotnet add package $(nugetName) -v $(nugetVersion)
 
-# - ${{ if eq(parameters.toolset, 'dotnet') }}:
   - task: DotNetCoreCLI@2
     displayName: Restore Packages
     inputs:
       command: restore
       projects: $(solution_path)
 
-# - ${{ if eq(parameters.toolset, 'dotnet') }}:
   - task: DotNetCoreCLI@2
     displayName: Build
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
     inputs:
       command: build
       projects: $(solution_path)
