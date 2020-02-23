@@ -177,6 +177,7 @@ jobs:
     #   Verify compatibility
     ###################################
   - job: Wait
+    dependsOn: Publish_NuGet
     pool: server    
     steps:
       - task: Delay@1
