@@ -181,12 +181,8 @@ jobs:
       matrix:
         linux:
           imageName: 'ubuntu-16.04'
-          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          path: 'Clients/Client1'
         mac:
           imageName: 'ubuntu-16.04'
-          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          path: 'Clients/Client2'
     pool:
       vmImage: $(imageName)
     steps:
