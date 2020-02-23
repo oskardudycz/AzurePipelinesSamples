@@ -34,14 +34,13 @@ jobs:
   - job: Build
     pool:
       vmImage: 'ubuntu-latest'
-    # strategy:
-      # matrix:
-        # pg9.6:
-          # postgresService: pg9.6
-        # pg10:
-          # postgresService: pg10
-        # pg11:
-          # postgresService: pg11
+      matrix:
+        linux:
+          imageName: 'ubuntu-16.04'
+        mac:
+          imageName: 'macos-10.14'
+        windows:
+          imageName: 'vs2017-win2016'
     steps:
       - task: UseDotNet@2
         displayName: Install .Net Core
@@ -64,6 +63,7 @@ jobs:
 
       - task: CopyFiles@2
         displayName: Copy Built Source Code
+        condition: eq( variables['Agent.OS'], 'Linux' )
         inputs:
           contents:  |
             **
@@ -72,6 +72,7 @@ jobs:
 
       - task: PublishBuildArtifacts@1
         displayName: Publish Built Source Code
+        condition: eq( variables['Agent.OS'], 'Linux' )
         inputs:
           pathToPublish: $(Build.ArtifactStagingDirectory)
           artifactName: BuiltSourceCode
