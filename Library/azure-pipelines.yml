@@ -18,16 +18,16 @@ resources:
       image: mysticmind/postgres-plv8:9.6-1.4
       ports:
         - 5432:5432
-
+  
   repositories:
     - repository: Client1Repo # The name used to reference this repository in the checkout step
       type: github
       endpoint: oskardudycz
-      name: oskardudycz/AzurePipelinesSamples
+      name: oskardudycz/AzurePipelinesSample
     - repository: Client2Repo # The name used to reference this repository in the checkout step
       type: github
       endpoint: oskardudycz
-      name: oskardudycz/AzurePipelinesSamples
+      name: oskardudycz/AzurePipelinesSample
 
 variables:
   config: Release
@@ -135,14 +135,57 @@ jobs:
           arguments: '--configuration $(config)'
 
     ###################################
-    #   Verify compatibility
+    #   Publish NuGet
     ###################################
   - job: Publish_NuGet
     dependsOn: Test
+    pool:
+      vmImage: 'ubuntu-latest'
 
+    steps:
+      - checkout: none #skip checking out the default repository resource
+
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download Built Source Code'
+        inputs:
+          artifactName: BuiltSourceCode
+          downloadPath: $(Build.SourcesDirectory)
+          
+      - task: DotNetCoreCLI@2
+        displayName: Pack
+        inputs:
+          command: pack
+          nobuild: true
+          projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
+          packDestination: '$(Build.ArtifactStagingDirectory)'
+          versioningScheme: byPrereleaseNumber
+          arguments: '--configuration $(config)'
+
+      - task: NuGetCommand@2
+        displayName: Publish packages to NuGet
+        inputs:
+          command: 'push'
+          nuGetFeedType: 'external'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+          publishFeedCredentials: 'NuGet'
+
+      - task: NuGetCommand@2
+        displayName: Publish symbol packages to NuGet
+        inputs:
+            command: 'push'
+            nuGetFeedType: 'external'
+            packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+            publishFeedCredentials: 'NuGet'
+
+    ###################################
+    #   Verify compatibility
+    ###################################
+  - job: Verify_compatibility
+    dependsOn: Publish_NuGet
+    
     pool:
       vmImage: 'ubuntu-16.04'
 
     steps:
       - checkout: Client1Repo
-
+            
