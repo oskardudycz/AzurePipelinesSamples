@@ -176,6 +176,12 @@ jobs:
     ###################################
     #   Verify compatibility
     ###################################
+  - job: Wait
+    pool: server    
+    steps:
+      - task: Delay@1
+        inputs:
+          delayForMinutes: '2' 
   
   - job: Verify_compatibility
     dependsOn: Publish_NuGet
@@ -184,28 +190,24 @@ jobs:
         client1:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          clientProjectPath: 'AzurePipelinesSamples/Library/Clients/Client1/Client1/Client1.csproj'
-          clientSolutionPath: 'AzurePipelinesSamples/Library/Clients/Client1/Client1.sln'
+          clientProjectPath: 'Library/Clients/Client1/Client1/Client1.csproj'
+          clientSolutionPath: 'Library/Clients/Client1/Client1.sln'
         client2:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          projectPath: 'AzurePipelinesSamples/Library/Clients/Client2/Client2/Client2.csproj'
-          clientSolutionPath: 'AzurePipelinesSamples/Library/Clients/Client2/Client2.sln'
+          projectPath: 'Library/Clients/Client2/Client2/Client2.csproj'
+          clientSolutionPath: 'Library/Clients/Client2/Client2.sln'
     pool:
       vmImage: $(imageName)
     steps:
       - checkout: none
       - script: |
-         git clone $(repositoryUrl)
+         git clone $(repositoryUrl) .
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
-
-      - task: Delay@1
-        inputs:
-          delayForMinutes: '2' 
           
       - script: |
          dotnet add $(Build.SourcesDirectory)/$(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
