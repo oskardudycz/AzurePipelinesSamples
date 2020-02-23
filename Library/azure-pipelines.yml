@@ -1,5 +1,8 @@
 trigger:
-  - master
+  batch: true
+  branches:
+    include:
+      - master
 
 resources:
   containers:
@@ -20,11 +23,11 @@ resources:
     - repository: Client1Repo # The name used to reference this repository in the checkout step
       type: github
       endpoint: oskardudycz
-      name: oskardudycz/AzurePipelinesSample
+      name: oskardudycz/AzurePipelinesSamples
     - repository: Client2Repo # The name used to reference this repository in the checkout step
       type: github
       endpoint: oskardudycz
-      name: oskardudycz/AzurePipelinesSample
+      name: oskardudycz/AzurePipelinesSamples
 
 variables:
   config: Release
