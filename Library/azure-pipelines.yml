@@ -193,6 +193,6 @@ jobs:
       vmImage: 'ubuntu-16.04'
 
     steps:
-      - template: templates/npm-steps.yml  # Template reference
+      - template: steps-compatibility-check.yml  # Template reference
         parameters:
           repository: $(repositoryToCheckout)
