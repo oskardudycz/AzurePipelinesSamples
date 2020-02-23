@@ -187,11 +187,15 @@ jobs:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           path: Clients/Client2
     steps:
-    - template: steps-compatibility-check.yml  # Template reference
-      parameters:
-        repositoryUrl: $(repositoryUrl)
-        dotnet_core_version: $(dotnet_core_version)
-        solution_path: $(path)
-        config: $(config)
-        nugetName: 'Postgres.NET'
-        nugetVersion: ${AlphaNugetVersion}
+      - task: UseDotNet@2
+        displayName: Install .Net Core
+        inputs:
+          version: $(dotnet_core_version)
+      - template: steps-compatibility-check.yml  # Template reference
+        parameters:
+          repositoryUrl: $(repositoryUrl)
+          dotnet_core_version: $(dotnet_core_version)
+          solution_path: $(path)
+          config: $(config)
+          nugetName: 'Postgres.NET'
+          nugetVersion: ${AlphaNugetVersion}

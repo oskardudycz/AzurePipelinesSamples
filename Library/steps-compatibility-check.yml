@@ -18,10 +18,6 @@ parameters:
   type: string
 
 steps:
-  - task: UseDotNet@2
-    displayName: Install .Net Core
-    inputs:
-      version: $(dotnet_core_version)
   - script: |
          dotnet add package $(nugetName) -v $(nugetVersion)
 
