@@ -148,7 +148,7 @@ jobs:
           command: pack
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           packDestination: '$(Build.ArtifactStagingDirectory)'
-          versioningScheme: byPrereleaseNumber
+          versioningScheme: byBuildNumber
           arguments: '--configuration $(config)'
 
       - task: NuGetCommand@2
