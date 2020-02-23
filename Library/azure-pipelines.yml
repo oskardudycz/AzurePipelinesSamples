@@ -176,8 +176,6 @@ jobs:
     ###################################
   - job: Verify_compatibility
     dependsOn: Publish_NuGet
-    pool:
-      vmImage: 'ubuntu-16.04'
     strategy:
       matrix:
         client1:
@@ -186,16 +184,10 @@ jobs:
         client2:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           path: Clients/Client2
+    pool:
+      vmImage: 'ubuntu-16.04'
     steps:
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
-      - template: steps-compatibility-check.yml  # Template reference
-        parameters:
-          repositoryUrl: $(repositoryUrl)
-          dotnet_core_version: $(dotnet_core_version)
-          solution_path: $(path)
-          config: $(config)
-          nugetName: 'Postgres.NET'
-          nugetVersion: ${AlphaNugetVersion}
