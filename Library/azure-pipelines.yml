@@ -196,7 +196,7 @@ jobs:
         client2:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
           imageName: 'ubuntu-16.04'
-          projectPath: 'Library/Clients/Client2/Client2/Client2.csproj'
+          clientProjectPath: 'Library/Clients/Client2/Client2/Client2.csproj'
           clientSolutionPath: 'Library/Clients/Client2/Client2.sln'
     pool:
       vmImage: $(imageName)
