@@ -185,7 +185,7 @@ jobs:
           delayForMinutes: '2' 
   
   - job: Verify_compatibility
-    dependsOn: Publish_NuGet
+    dependsOn: Wait
     strategy:
       matrix:
         client1:
