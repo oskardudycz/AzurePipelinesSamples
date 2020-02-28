@@ -5,28 +5,28 @@ Azure Pipeline Samples
 
 ### 1. Build
 
-    ![Build](Library/assets/01_build_step.png)
+![Build](Library/assets/01_build_step.png)
 
 ### 2. Test
 
-    ![Build](Library/assets/02_test_step.png)
+![Build](Library/assets/02_test_step.png)
 
 ### 3. Publish NuGet
 
-    ![Build](Library/assets/03_publish_step.png)
+![Build](Library/assets/03_publish_step.png)
 
 ### 4. Contract test with prerelease NuGet
 
-    ![Build](Library/assets/04_contract_tests_step.png)
+![Build](Library/assets/04_contract_tests_step.png)
 
 ### 5. Release NuGet
 
-    ![Build](Library/assets/05_release_step.png)
+![Build](Library/assets/05_release_step.png)
 
 
 ### 6. Whole flow
 
-    ![Build](Library/assets/Library-Flow-Diagram.png)
+![Build](Library/assets/Library-Flow-Diagram.png)
 
 See full configuration in the [azure-pipelines.yml](Library/azure-pipelines.yml)
 
