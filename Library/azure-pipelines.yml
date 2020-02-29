@@ -1,10 +1,20 @@
+######################################################
+#   Build name pattern
+######################################################
 name: $(BuildDefinitionName)_$(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+######################################################
+#   Triggers
+######################################################
 trigger:
   batch: true
   branches:
     include:
       - master
 
+######################################################
+#   Resources
+######################################################
 resources:
   containers:
     - container: pg11
@@ -20,6 +30,9 @@ resources:
       ports:
         - 5432:5432
 
+######################################################
+#   Variables
+######################################################
 variables:
   config: Release
   dotnet_core_version: 3.1.x
@@ -33,12 +46,20 @@ variables:
   AlphaNugetVersion: $(major).$(minor).$(patch)-alpha.1
   
   
+
+######################################################
+#   JOBS
+######################################################
 jobs:
-    ###################################
-    #   Build
-    ###################################
+  ####################################################
+  #   JOB 1: Build Source Code
+  ####################################################
   - job: Build
     strategy:
+      ################################################
+      #  Matrix build for:
+      #  Linux, MacOS, Windows Server
+      ################################################
       matrix:
         linux:
           imageName: 'ubuntu-16.04'
@@ -47,21 +68,36 @@ jobs:
         windows:
           imageName: 'vs2017-win2016'
     pool:
+      ################################################
+      # Set VM image for the build
+      ################################################
       vmImage: $(imageName)
     steps:
+      ################################################
+      # Step 1: Checkout
+      ################################################
       - checkout: self
+      ################################################
+      # Step 2: Install .NET Core
+      ################################################
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
 
+      ################################################
+      # Step 2: Restore packages
+      ################################################
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
         inputs:
           command: restore
           projects: $(solution_path)
 
+      ################################################
+      # Step 3: Build
+      ################################################
       - task: DotNetCoreCLI@2
         displayName: Build
         inputs:
@@ -69,6 +105,10 @@ jobs:
           projects: $(solution_path)
           arguments: '--configuration $(config) --no-restore'
 
+      ################################################
+      # Step 4: Copy built source code
+      #         to build artifacts
+      ################################################
       - task: CopyFiles@2
         displayName: Copy Built Source Code
         condition: eq( variables['Agent.OS'], 'Linux' )
@@ -78,6 +118,9 @@ jobs:
             !.git/**/*
           targetFolder: $(Build.ArtifactStagingDirectory)
 
+      ################################################
+      # Step 4: Publish build artifacts
+      ################################################
       - task: PublishBuildArtifacts@1
         displayName: Publish Built Source Code
         condition: eq( variables['Agent.OS'], 'Linux' )
@@ -85,14 +128,21 @@ jobs:
           pathToPublish: $(Build.ArtifactStagingDirectory)
           artifactName: BuiltSourceCode
 
-    ###################################
-    #   Test
-    ###################################
+  ####################################################
+  #   JOB 2: Test with different PG versions
+  ####################################################
   - job: Test
     dependsOn: Build
     pool:
+      ################################################
+      # Use Linux VM image
+      ################################################
       vmImage: 'ubuntu-16.04'
     strategy:
+      ################################################
+      #  Matrix build for
+      #  Different PG Versions
+      ################################################
       matrix:
         pg9.6:
           postgresService: pg9.6
@@ -101,27 +151,48 @@ jobs:
         pg11:
           postgresService: pg11
     services:
+      ################################################
+      #  Start Postgres Docker image
+      ################################################
       postgres: $[ variables['postgresService'] ]
     steps:
-      - checkout: none #skip checking out the default repository resource
+      ################################################
+      # Step 0: No checkout as we're getting
+      #         built code from artifacts
+      ################################################
+      - checkout: none
 
+      ################################################
+      # Step 1: Get built source code
+      #         from build artifacts
+      ################################################
       - task: DownloadBuildArtifacts@0
         displayName: 'Download Built Source Code'
         inputs:
           artifactName: BuiltSourceCode
           downloadPath: $(Build.SourcesDirectory)
 
+      ################################################
+      # Step 2: Setup Postgres database
+      #         for tests
+      ################################################
       - script: |
           PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
           docker exec $PG_CONTAINER_NAME psql -U postgres -c "create database $(pg_db);"
         displayName: Create test database
 
+      ################################################
+      # Step 3: Install .NET Core
+      ################################################
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
 
+      ################################################
+      # Step 4: Run tests
+      ################################################
       - task: DotNetCoreCLI@2
         displayName: Test
         inputs:
@@ -130,23 +201,34 @@ jobs:
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           arguments: '--configuration $(config)'
 
-    ###################################
-    #   Publish NuGet
-    ###################################
+  ####################################################
+  #   Publish NuGet
+  ####################################################
   - job: Publish_NuGet
     dependsOn: Test
     pool:
       vmImage: 'ubuntu-latest'
 
     steps:
-      - checkout: none #skip checking out the default repository resource
+      ################################################
+      # Step 0: No checkout as we're getting
+      #         built code from artifacts
+      ################################################
+      - checkout: none
 
+      ################################################
+      # Step 1: Get built source code
+      #         from build artifacts
+      ################################################
       - task: DownloadBuildArtifacts@0
         displayName: 'Download Built Source Code'
         inputs:
           artifactName: BuiltSourceCode
           downloadPath: $(Build.SourcesDirectory)
 
+      ################################################
+      # Step 2: Create alpha NuGet package
+      ################################################
       - task: DotNetCoreCLI@2
         displayName: Pack
         inputs:
@@ -157,6 +239,9 @@ jobs:
           versioningScheme: 'byEnvVar'
           versionEnvVar: 'AlphaNugetVersion'
 
+      ################################################
+      # Step 3: Publish alpha NuGet package
+      ################################################
       - task: NuGetCommand@2
         displayName: Publish packages to NuGet
         inputs:
@@ -165,6 +250,9 @@ jobs:
           packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
           publishFeedCredentials: 'NuGet'
 
+      ################################################
+      # Step 3: Publish alpha symbols NuGet package
+      ################################################
       - task: NuGetCommand@2
         displayName: Publish symbol packages to NuGet
         inputs:
@@ -173,9 +261,9 @@ jobs:
           packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
           publishFeedCredentials: 'NuGet'
 
-    ###################################
-    #   Verify compatibility
-    ###################################
+  #####################################################
+  #   JOB 3: Wait for NuGet to be published
+  #####################################################
   - job: Wait
     dependsOn: Publish_NuGet
     pool: server    
@@ -184,41 +272,70 @@ jobs:
         inputs:
           delayForMinutes: '2' 
   
-  - job: Verify_compatibility
+  #####################################################
+  #   JOB 3: Perform contract tests to verify
+  #          if there are no breaking change
+  #####################################################
+  - job: Contracts_tests
     dependsOn: Wait
     strategy:
+      ################################################
+      #  Matrix build for two client projects
+      #  that are using our NuGet package
+      ################################################
       matrix:
         client1:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          imageName: 'ubuntu-16.04'
           clientProjectPath: 'Library/Clients/Client1/Client1/Client1.csproj'
           clientSolutionPath: 'Library/Clients/Client1/Client1.sln'
         client2:
           repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          imageName: 'ubuntu-16.04'
           clientProjectPath: 'Library/Clients/Client2/Client2/Client2.csproj'
           clientSolutionPath: 'Library/Clients/Client2/Client2.sln'
     pool:
-      vmImage: $(imageName)
+      ################################################
+      # Use Linux VM image
+      ################################################
+      vmImage: 'ubuntu-16.04'
     steps:
+      ################################################
+      # Step 0: No checkout as we're getting
+      #         other repositories via checkout scrpt
+      ################################################
       - checkout: none
+      ################################################
+      # Step 1: Clone client project repository
+      ################################################
       - script: |
          git clone $(repositoryUrl) .
+      ################################################
+      # Step 2: Install .NET Core
+      ################################################
       - task: UseDotNet@2
         displayName: Install .Net Core
         inputs:
           version: $(dotnet_core_version)
           performMultiLevelLookup: true
           
+      ################################################
+      # Step 3: Update library NuGet to alpha version
+      #         published in previous steps
+      ################################################
       - script: |
          dotnet add $(Build.SourcesDirectory)/$(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
          
+      ################################################
+      # Step 4: Restore packages to
+      ################################################
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
         inputs:
           command: restore
           projects: $(clientSolutionPath)
 
+      ################################################
+      # Step 5: Build client library
+      ################################################
       - task: DotNetCoreCLI@2
         displayName: Build
         inputs:
