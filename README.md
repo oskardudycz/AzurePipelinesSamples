@@ -1,7 +1,7 @@
 # Azure Pipelines Samples
 Azure Pipeline Samples
 
-## Sample Library Flow
+## Sample Flow - Library
 
 ### 1. Build
 
@@ -29,6 +29,19 @@ Azure Pipeline Samples
 ![Build](Library/assets/Library-Flow-Diagram.png)
 
 See full configuration in the [azure-pipelines.yml](Library/azure-pipelines.yml)
+
+
+## Sample Flow - Selenium-based Web E2e Tests
+
+![Build](Selenium/assets/Selenium-Flow-Diagram.png)
+
+## Sample Flow - Web App with different APIs (or different versions of the same API) compatibility check
+
+![Build](WebWithApiCompatibility/assets/WebWithApiCompatibility-Flow-Diagram.png)
+
+## Sample Flow - Api E2E tests with Docker
+
+![Build](ApiE2ETestsWithDocker/assets/ApiE2ETestsWithDocker-Flow-Diagram.png)
 
 ## Other Resources
 

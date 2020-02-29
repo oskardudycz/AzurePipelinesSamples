@@ -273,10 +273,10 @@ jobs:
           delayForMinutes: '2' 
   
   #####################################################
-  #   JOB 3: Perform contract tests to verify
+  #   JOB 4 Perform contract tests to verify
   #          if there are no breaking change
   #####################################################
-  - job: Contracts_tests
+  - job: Contract_tests
     dependsOn: Wait
     strategy:
       ################################################
