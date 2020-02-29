@@ -79,3 +79,10 @@ See full configuration in the [azure-pipelines.yml](Library/azure-pipelines.yml)
 
 10. Templates:
 - https://docs.microsoft.com/en-us/azure/devops/pipelines/process/templates?view=azure-devops
+
+
+I found an issue or I have a change request
+--------------------------------
+Feel free to create an issue on GitHub. Contributions, pull requests are more than welcome!
+
+**AzurePipelinesSamples** is Copyright &copy; 2020 [Oskar Dudycz](http://oskar-dudycz.pl) and other contributors under the [MIT license](LICENSE).
