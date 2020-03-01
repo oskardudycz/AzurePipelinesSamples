@@ -64,12 +64,12 @@ jobs:
   ####################################################
   #   JOB 2: Test with different PG versions
   ####################################################
-  - template: job_2_test_with_different_postgres_versions.yml
+  - template: jobs/job_2_test_with_different_postgres_versions.yml
   
   ####################################################
   #   JOB 3: Publish Pre-release NuGet
   ####################################################
-  - template: job_publish_pre_release_nuget.yml
+  - template: jobs/job_publish_pre_release_nuget.yml
 
   #####################################################
   #   JOB 4: Wait for NuGet to be published
@@ -86,76 +86,11 @@ jobs:
   #   JOB 5: Perform contract tests to verify
   #          if there are no breaking change
   #####################################################
-  - job: Contract_tests
-    dependsOn: Wait
-    strategy:
-      ################################################
-      #  Matrix build for two client projects
-      #  that are using our NuGet package
-      ################################################
-      matrix:
-        client1:
-          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          clientProjectPath: 'Library/Clients/Client1/Client1/Client1.csproj'
-          clientSolutionPath: 'Library/Clients/Client1/Client1.sln'
-        client2:
-          repositoryUrl: 'https://github.com/oskardudycz/AzurePipelinesSamples'
-          clientProjectPath: 'Library/Clients/Client2/Client2/Client2.csproj'
-          clientSolutionPath: 'Library/Clients/Client2/Client2.sln'
-    pool:
-      ################################################
-      # Use Linux VM image
-      ################################################
-      vmImage: 'ubuntu-16.04'
-    steps:
-      ################################################
-      # Step 0: No checkout as we're getting
-      #         other repositories via checkout scrpt
-      ################################################
-      - checkout: none
-      ################################################
-      # Step 1: Clone client project repository
-      ################################################
-      - script: |
-         git clone $(repositoryUrl) .
-      ################################################
-      # Step 2: Install .NET Core
-      ################################################
-      - task: UseDotNet@2
-        displayName: Install .Net Core
-        inputs:
-          version: $(dotnet_core_version)
-          performMultiLevelLookup: true
-          
-      ################################################
-      # Step 3: Update library NuGet to alpha version
-      #         published in previous steps
-      ################################################
-      - script: |
-         dotnet add $(Build.SourcesDirectory)/$(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
-         
-      ################################################
-      # Step 4: Restore packages to
-      ################################################
-      - task: DotNetCoreCLI@2
-        displayName: Restore Packages
-        inputs:
-          command: restore
-          projects: $(clientSolutionPath)
+  - template: jobs/job_contract_tests_with_client_apps.yml
 
-      ################################################
-      # Step 5: Build client library
-      ################################################
-      - task: DotNetCoreCLI@2
-        displayName: Build
-        inputs:
-          command: build
-          projects: $(clientSolutionPath)
-          arguments: '--configuration $(config)'
-
-  ####################################################
+  #####################################################
   #   JOB 6: Publish NuGet
-  ####################################################
+  #####################################################
   - job: Publish_NuGet
     dependsOn: Contract_tests
     condition: and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
