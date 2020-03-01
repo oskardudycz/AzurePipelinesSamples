@@ -3,7 +3,7 @@ parameters:
     type: string
     default: 'Publish_NuGet'
   - name: dependsOn
-    type: string | [ string ]
+    type: 'string | [ string ]'
     default: any    
 
 jobs:
