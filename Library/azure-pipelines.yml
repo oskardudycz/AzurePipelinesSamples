@@ -1,9 +1,4 @@
 ######################################################
-#   Build name pattern
-######################################################
-name: $(BuildDefinitionName)_$(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
-
-######################################################
 #   Triggers
 ######################################################
 trigger:
@@ -11,8 +6,19 @@ trigger:
   branches:
     include:
       - master
+  
+  paths:
+    include:
+    - Library/*
 pr:
-- master
+  batch: true
+  branches:
+    include:
+      - master
+  
+  paths:
+    include:
+    - Library/*
 
 ######################################################
 #   Resources
