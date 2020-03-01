@@ -59,7 +59,7 @@ jobs:
   ####################################################
   #   JOB 1: Build Source Code
   ####################################################
-- template: jobs/job_1_build_with_multiple_os.yml  
+- template: jobs/job_1_build_with_multiple_os.yml
 
   ####################################################
   #   JOB 2: Test with different PG versions
