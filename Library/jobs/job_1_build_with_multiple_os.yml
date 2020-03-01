@@ -1,0 +1,77 @@
+jobs:
+  ####################################################
+  #   JOB 1: Build Source Code
+  ####################################################
+  - job: Build
+    strategy:
+      ################################################
+      #  Matrix build for:
+      #  Linux, MacOS, Windows Server
+      ################################################
+      matrix:
+        linux:
+          imageName: 'ubuntu-16.04'
+        mac:
+          imageName: 'macos-10.14'
+        windows:
+          imageName: 'vs2017-win2016'
+    pool:
+      ################################################
+      # Set VM image for the build
+      ################################################
+      vmImage: $(imageName)
+    steps:
+      ################################################
+      # Step 1: Checkout
+      ################################################
+      - checkout: self
+      ################################################
+      # Step 2: Install .NET Core
+      ################################################
+      - task: UseDotNet@2
+        displayName: Install .Net Core
+        inputs:
+          version: $(dotnet_core_version)
+          performMultiLevelLookup: true
+
+      ################################################
+      # Step 2: Restore packages
+      ################################################
+      - task: DotNetCoreCLI@2
+        displayName: Restore Packages
+        inputs:
+          command: restore
+          projects: $(solution_path)
+
+      ################################################
+      # Step 3: Build
+      ################################################
+      - task: DotNetCoreCLI@2
+        displayName: Build
+        inputs:
+          command: build
+          projects: $(solution_path)
+          arguments: '--configuration $(config) --no-restore'
+
+      ################################################
+      # Step 4: Copy built source code
+      #         to build artifacts
+      ################################################
+      - task: CopyFiles@2
+        displayName: Copy Built Source Code
+        condition: eq( variables['Agent.OS'], 'Linux' )
+        inputs:
+          contents:  |
+            **
+            !.git/**/*
+          targetFolder: $(Build.ArtifactStagingDirectory)
+
+      ################################################
+      # Step 4: Publish build artifacts
+      ################################################
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Built Source Code
+        condition: eq( variables['Agent.OS'], 'Linux' )
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)
+          artifactName: BuiltSourceCode
