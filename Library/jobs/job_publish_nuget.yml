@@ -1,9 +1,14 @@
 parameters:
+  
   - name: name
     type: string
     default: 'Publish_NuGet'
+
   - name: dependsOn
-    default: any    
+    default: any  
+
+  - name: nugetVersion
+    type: string
 
 jobs:
   ####################################################
@@ -39,10 +44,10 @@ jobs:
         inputs:
           command: pack
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          arguments: '--configuration $(config)'
+          arguments: '--configuration $(config) -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           versioningScheme: 'byEnvVar'
-          versionEnvVar: 'AlphaNugetVersion'
+          versionEnvVar: ${{ parameters.dependsOn }}
 
       ################################################
       # Step 3: Publish alpha NuGet package
