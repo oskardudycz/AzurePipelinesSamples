@@ -12,7 +12,6 @@ parameters:
 
   - name: condition
     default: succeeded()  
-
   
   - name: buildConfig
     default: Release 
@@ -66,16 +65,6 @@ jobs:
         inputs:
           command: 'push'
           nuGetFeedType: 'external'
+          includeSymbols: true
           packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-          publishFeedCredentials: 'NuGet'
-
-      ################################################
-      # Step 4: Publish alpha symbols NuGet package
-      ################################################
-      - task: NuGetCommand@2
-        displayName: Publish symbol packages to NuGet
-        inputs:
-          command: 'push'
-          nuGetFeedType: 'external'
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
           publishFeedCredentials: 'NuGet'
