@@ -73,7 +73,7 @@ jobs:
     parameters:
       name: Publish_Prerelease_NuGet
       dependsOn: Test
-      nugetVersion: $(AlphaNugetVersion)
+      nugetVersionEnv: 'AlphaNugetVersion'
 
   #####################################################
   #   JOB 4: Wait for NuGet to be published
@@ -99,5 +99,5 @@ jobs:
     parameters:
       name: Publish_NuGet
       dependsOn: Contract_tests
-      nugetVersion: $(NugetVersion)
-      condition: and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
+      nugetVersionEnv: 'NugetVersion'
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

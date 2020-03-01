@@ -7,7 +7,7 @@ parameters:
   - name: dependsOn
     default: any  
 
-  - name: nugetVersion
+  - name: nugetVersionEnv
     type: string
 
   - name: condition
@@ -48,8 +48,9 @@ jobs:
         inputs:
           command: pack
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          arguments: '--configuration $(config) -p:IncludeSymbols=true -p:SymbolPackageFormat=snupkg'
+          arguments: '--configuration $(config)'
           packDestination: '$(Build.ArtifactStagingDirectory)'
+          includeSymbols: true
           versioningScheme: 'byEnvVar'
           versionEnvVar: ${{ parameters.dependsOn }}
 
