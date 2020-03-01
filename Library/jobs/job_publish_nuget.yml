@@ -52,7 +52,7 @@ jobs:
           packDestination: '$(Build.ArtifactStagingDirectory)'
           includeSymbols: true
           versioningScheme: 'byEnvVar'
-          versionEnvVar: ${{ parameters.dependsOn }}
+          versionEnvVar: ${{ parameters.nugetVersionEnv }}
 
       ################################################
       # Step 3: Publish alpha NuGet package
