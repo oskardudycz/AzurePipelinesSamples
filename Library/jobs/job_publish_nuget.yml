@@ -10,12 +10,16 @@ parameters:
   - name: nugetVersion
     type: string
 
+  - name: condition
+    default: any  
+
 jobs:
   ####################################################
   #   JOB 3: Publish Pre-release NuGet
   ####################################################
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
+    condition: ${{ parameters.condition }}
     pool:
       vmImage: 'ubuntu-16.04'
 

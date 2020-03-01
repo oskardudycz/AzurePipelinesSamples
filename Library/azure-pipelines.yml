@@ -100,4 +100,4 @@ jobs:
       name: Publish_NuGet
       dependsOn: Contract_tests
       nugetVersion: $(NugetVersion)
-    condition: and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
+      condition: and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
