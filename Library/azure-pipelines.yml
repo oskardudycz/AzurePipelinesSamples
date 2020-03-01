@@ -70,6 +70,9 @@ jobs:
   #   JOB 3: Publish Pre-release NuGet
   ####################################################
   - template: jobs/job_publish_nuget.yml
+    parameters:
+      name: Publish_Prerelease_NuGet
+      dependsOn: Test
 
   #####################################################
   #   JOB 4: Wait for NuGet to be published
