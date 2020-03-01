@@ -1,3 +1,8 @@
+parameters:
+  
+  - name: buildConfig
+    default: Release 
+
 jobs:
   - job: Contract_tests
     dependsOn: Wait
@@ -64,4 +69,4 @@ jobs:
         inputs:
           command: build
           projects: $(clientSolutionPath)
-          arguments: '--configuration $(config)'
+          arguments: '--configuration ${{ parameters.buildConfig }}'

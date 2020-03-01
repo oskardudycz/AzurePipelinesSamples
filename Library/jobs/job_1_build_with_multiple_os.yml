@@ -1,3 +1,8 @@
+parameters:
+
+  - name: buildConfig
+    default: Release 
+
 jobs:
   ####################################################
   #   JOB 1: Build Source Code
@@ -51,7 +56,7 @@ jobs:
         inputs:
           command: build
           projects: $(solution_path)
-          arguments: '--configuration $(config) --no-restore'
+          arguments: '--configuration ${{ parameters.buildConfig }} --no-restore'
 
       ################################################
       # Step 4: Copy built source code

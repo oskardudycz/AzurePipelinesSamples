@@ -43,7 +43,6 @@ resources:
 variables:
   # .NET build variables
   dotnet_core_version: 3.1.x
-  config: Release
   # Postgres variables
   pg_db: postgres_net_test
   testing_database: "Host=localhost;Port=5432;Database=postgres_net_test;Username=postgres;Password=Password12!"

@@ -13,6 +13,10 @@ parameters:
   - name: condition
     default: succeeded()  
 
+  
+  - name: buildConfig
+    default: Release 
+
 jobs:
   ####################################################
   #   JOB 3: Publish Pre-release NuGet
@@ -48,14 +52,14 @@ jobs:
         inputs:
           command: pack
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          arguments: '--configuration $(config)'
+          arguments: '--configuration ${{ parameters.buildConfig }}'
           packDestination: '$(Build.ArtifactStagingDirectory)'
           includeSymbols: true
           versioningScheme: 'byEnvVar'
           versionEnvVar: ${{ parameters.nugetVersionEnv }}
 
       ################################################
-      # Step 3: Publish NuGet package
+      # Step 3: Publish alpha NuGet package
       ################################################
       - task: NuGetCommand@2
         displayName: Publish packages to NuGet
@@ -63,4 +67,15 @@ jobs:
           command: 'push'
           nuGetFeedType: 'external'
           packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+          publishFeedCredentials: 'NuGet'
+
+      ################################################
+      # Step 4: Publish alpha symbols NuGet package
+      ################################################
+      - task: NuGetCommand@2
+        displayName: Publish symbol packages to NuGet
+        inputs:
+          command: 'push'
+          nuGetFeedType: 'external'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
           publishFeedCredentials: 'NuGet'

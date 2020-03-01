@@ -1,3 +1,8 @@
+parameters:
+  
+  - name: buildConfig
+    default: Release 
+
 jobs:
   ####################################################
   #   JOB 2: Test with different PG versions
@@ -70,4 +75,4 @@ jobs:
           command: test
           nobuild: true
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          arguments: '--configuration $(config)'
+          arguments: '--configuration ${{ parameters.buildConfig }}'
