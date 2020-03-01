@@ -53,7 +53,6 @@ jobs:
           projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           arguments: '--configuration ${{ parameters.buildConfig }}'
           packDestination: '$(Build.ArtifactStagingDirectory)'
-          includeSymbols: true
           versioningScheme: 'byEnvVar'
           versionEnvVar: ${{ parameters.nugetVersionEnv }}
 
@@ -65,6 +64,5 @@ jobs:
         inputs:
           command: 'push'
           nuGetFeedType: 'external'
-          includeSymbols: true
           packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
           publishFeedCredentials: 'NuGet'
