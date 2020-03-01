@@ -30,6 +30,14 @@ jobs:
       # Step 1: Checkout
       ################################################
       - checkout: self
+      ################################################
+      # Step 2: Install .NET Core
+      ################################################
+      - task: UseDotNet@2
+        displayName: Install .Net Core
+        inputs:
+          version: $(dotnet_core_version)
+          performMultiLevelLookup: true
 
       ################################################
       # Step 2: Restore packages

@@ -36,16 +36,24 @@ jobs:
       ################################################
       - script: |
          git clone $(repositoryUrl) .
+      ################################################
+      # Step 2: Install .NET Core
+      ################################################
+      - task: UseDotNet@2
+        displayName: Install .Net Core
+        inputs:
+          version: $(dotnet_core_version)
+          performMultiLevelLookup: true
           
       ################################################
-      # Step 2: Update library NuGet to alpha version
+      # Step 3: Update library NuGet to alpha version
       #         published in previous steps
       ################################################
       - script: |
          dotnet add $(Build.SourcesDirectory)/$(clientProjectPath) package Postgres.NET -v $(AlphaNugetVersion)
          
       ################################################
-      # Step 3: Restore packages to
+      # Step 4: Restore packages to
       ################################################
       - task: DotNetCoreCLI@2
         displayName: Restore Packages
@@ -54,7 +62,7 @@ jobs:
           projects: $(clientSolutionPath)
 
       ################################################
-      # Step 4: Build client library
+      # Step 5: Build client library
       ################################################
       - task: DotNetCoreCLI@2
         displayName: Build
