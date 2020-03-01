@@ -64,138 +64,15 @@ jobs:
   ####################################################
   #   JOB 2: Test with different PG versions
   ####################################################
-  - job: Test
-    dependsOn: Build
-    pool:
-      ################################################
-      # Use Linux VM image
-      ################################################
-      vmImage: 'ubuntu-16.04'
-    strategy:
-      ################################################
-      #  Matrix build for
-      #  Different PG Versions
-      ################################################
-      matrix:
-        pg9.6:
-          postgresService: pg9.6
-        pg10:
-          postgresService: pg10
-        pg11:
-          postgresService: pg11
-    services:
-      ################################################
-      #  Start Postgres Docker image
-      ################################################
-      postgres: $[ variables['postgresService'] ]
-    steps:
-      ################################################
-      # Step 0: No checkout as we're getting
-      #         built code from artifacts
-      ################################################
-      - checkout: none
-
-      ################################################
-      # Step 1: Get built source code
-      #         from build artifacts
-      ################################################
-      - task: DownloadBuildArtifacts@0
-        displayName: 'Download Built Source Code'
-        inputs:
-          artifactName: BuiltSourceCode
-          downloadPath: $(Build.SourcesDirectory)
-
-      ################################################
-      # Step 2: Setup Postgres database
-      #         for tests
-      ################################################
-      - script: |
-          PG_CONTAINER_NAME=$(docker ps --filter expose=5432/tcp --format {{.Names}})
-          docker exec $PG_CONTAINER_NAME psql -U postgres -c "create database $(pg_db);"
-        displayName: Create test database
-
-      ################################################
-      # Step 3: Install .NET Core
-      ################################################
-      - task: UseDotNet@2
-        displayName: Install .Net Core
-        inputs:
-          version: $(dotnet_core_version)
-          performMultiLevelLookup: true
-
-      ################################################
-      # Step 4: Run tests
-      ################################################
-      - task: DotNetCoreCLI@2
-        displayName: Test
-        inputs:
-          command: test
-          nobuild: true
-          projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          arguments: '--configuration $(config)'
-
+  - template: job_2_test_with_different_postgres_versions.yml
+  
   ####################################################
-  #   Publish Pre-release NuGet
+  #   JOB 3: Publish Pre-release NuGet
   ####################################################
-  - job: Publish_Prerelease_NuGet
-    dependsOn: Test
-    pool:
-      vmImage: 'ubuntu-16.04'
-
-    steps:
-      ################################################
-      # Step 0: No checkout as we're getting
-      #         built code from artifacts
-      ################################################
-      - checkout: none
-
-      ################################################
-      # Step 1: Get built source code
-      #         from build artifacts
-      ################################################
-      - task: DownloadBuildArtifacts@0
-        displayName: 'Download Built Source Code'
-        inputs:
-          artifactName: BuiltSourceCode
-          downloadPath: $(Build.SourcesDirectory)
-
-      ################################################
-      # Step 2: Create alpha NuGet package
-      ################################################
-      - task: DotNetCoreCLI@2
-        displayName: Pack
-        inputs:
-          command: pack
-          projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
-          arguments: '--configuration $(config)'
-          packDestination: '$(Build.ArtifactStagingDirectory)'
-          versioningScheme: 'byEnvVar'
-          versionEnvVar: 'AlphaNugetVersion'
-
-      ################################################
-      # Step 3: Publish alpha NuGet package
-      ################################################
-      - task: NuGetCommand@2
-        displayName: Publish packages to NuGet
-        inputs:
-          command: 'push'
-          nuGetFeedType: 'external'
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
-          publishFeedCredentials: 'NuGet'
-
-      ################################################
-      # Step 3: Publish alpha symbols NuGet package
-      ################################################
-      - task: NuGetCommand@2
-        displayName: Publish symbol packages to NuGet
-        inputs:
-          command: 'push'
-          nuGetFeedType: 'external'
-          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
-          publishFeedCredentials: 'NuGet'
+  - template: job_publish_pre_release_nuget.yml
 
   #####################################################
-  #   JOB 3: Wait for NuGet to be published
+  #   JOB 4: Wait for NuGet to be published
   #####################################################
   - job: Wait
     dependsOn: Publish_Prerelease_NuGet
@@ -206,7 +83,7 @@ jobs:
           delayForMinutes: '2' 
   
   #####################################################
-  #   JOB 4 Perform contract tests to verify
+  #   JOB 5: Perform contract tests to verify
   #          if there are no breaking change
   #####################################################
   - job: Contract_tests
@@ -277,11 +154,11 @@ jobs:
           arguments: '--configuration $(config)'
 
   ####################################################
-  #   Publish NuGet
+  #   JOB 6: Publish NuGet
   ####################################################
   - job: Publish_NuGet
     dependsOn: Contract_tests
-    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+    condition: and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
     pool:
       vmImage: 'ubuntu-16.04'
 
