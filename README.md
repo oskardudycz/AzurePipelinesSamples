@@ -1,5 +1,5 @@
 # Azure Pipelines Samples
-Azure Pipeline Samples
+Sample configurations with explanation and useful links.
 
 ## Sample Flow - Library
 

@@ -34,11 +34,14 @@ resources:
 #   Variables
 ######################################################
 variables:
-  config: Release
+  # .NET build variables
   dotnet_core_version: 3.1.x
+  config: Release
+  # Postgres variables
   pg_db: postgres_net_test
   testing_database: "Host=localhost;Port=5432;Database=postgres_net_test;Username=postgres;Password=Password12!"
   solution_path: Library/Postgres.NET.sln
+  # NuGet variables
   major: 1
   minor: 0
   patch: $[counter(variables['minor'], 0)] #this will reset when we bump minor
@@ -202,12 +205,12 @@ jobs:
           arguments: '--configuration $(config)'
 
   ####################################################
-  #   Publish NuGet
+  #   Publish Pre-release NuGet
   ####################################################
-  - job: Publish_NuGet
+  - job: Publish_Prerelease_NuGet
     dependsOn: Test
     pool:
-      vmImage: 'ubuntu-latest'
+      vmImage: 'ubuntu-16.04'
 
     steps:
       ################################################
@@ -265,7 +268,7 @@ jobs:
   #   JOB 3: Wait for NuGet to be published
   #####################################################
   - job: Wait
-    dependsOn: Publish_NuGet
+    dependsOn: Publish_Prerelease_NuGet
     pool: server    
     steps:
       - task: Delay@1
@@ -341,4 +344,64 @@ jobs:
         inputs:
           command: build
           projects: $(clientSolutionPath)
+          arguments: '--configuration $(config) --no-restore'
+
+  ####################################################
+  #   Publish NuGet
+  ####################################################
+  - job: Publish_NuGet
+    dependsOn: Contract_tests
+    pool:
+      vmImage: 'ubuntu-16.04'
+
+    steps:
+      ################################################
+      # Step 0: No checkout as we're getting
+      #         built code from artifacts
+      ################################################
+      - checkout: none
+
+      ################################################
+      # Step 1: Get built source code
+      #         from build artifacts
+      ################################################
+      - task: DownloadBuildArtifacts@0
+        displayName: 'Download Built Source Code'
+        inputs:
+          artifactName: BuiltSourceCode
+          downloadPath: $(Build.SourcesDirectory)
+
+      ################################################
+      # Step 2: Create alpha NuGet package
+      ################################################
+      - task: DotNetCoreCLI@2
+        displayName: Pack
+        inputs:
+          command: pack
+          projects: '$(Build.SourcesDirectory)/BuiltSourceCode/$(solution_path)'
           arguments: '--configuration $(config)'
+          packDestination: '$(Build.ArtifactStagingDirectory)'
+          versioningScheme: 'byEnvVar'
+          versionEnvVar: 'NugetVersion'
+
+      ################################################
+      # Step 3: Publish alpha NuGet package
+      ################################################
+      - task: NuGetCommand@2
+        displayName: Publish packages to NuGet
+        inputs:
+          command: 'push'
+          nuGetFeedType: 'external'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+          publishFeedCredentials: 'NuGet'
+
+      ################################################
+      # Step 3: Publish alpha symbols NuGet package
+      ################################################
+      - task: NuGetCommand@2
+        displayName: Publish symbol packages to NuGet
+        inputs:
+          command: 'push'
+          nuGetFeedType: 'external'
+          packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.snupkg'
+          publishFeedCredentials: 'NuGet'
