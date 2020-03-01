@@ -69,7 +69,7 @@ jobs:
   ####################################################
   #   JOB 3: Publish Pre-release NuGet
   ####################################################
-  - template: jobs/job_publish_pre_release_nuget.yml
+  - template: jobs/job_publish_nuget.yml
 
   #####################################################
   #   JOB 4: Wait for NuGet to be published
