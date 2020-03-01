@@ -11,6 +11,8 @@ trigger:
   branches:
     include:
       - master
+  pr:
+  - master
 
 ######################################################
 #   Resources
@@ -344,13 +346,14 @@ jobs:
         inputs:
           command: build
           projects: $(clientSolutionPath)
-          arguments: '--configuration $(config) --no-restore'
+          arguments: '--configuration $(config)'
 
   ####################################################
   #   Publish NuGet
   ####################################################
   - job: Publish_NuGet
     dependsOn: Contract_tests
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
     pool:
       vmImage: 'ubuntu-16.04'
 
