@@ -58,16 +58,7 @@ jobs:
         displayName: Create test database
 
       ################################################
-      # Step 3: Install .NET Core
-      ################################################
-      - task: UseDotNet@2
-        displayName: Install .Net Core
-        inputs:
-          version: $(dotnet_core_version)
-          performMultiLevelLookup: true
-
-      ################################################
-      # Step 4: Run tests
+      # Step 3: Run tests
       ################################################
       - task: DotNetCoreCLI@2
         displayName: Test
