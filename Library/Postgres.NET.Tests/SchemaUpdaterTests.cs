@@ -15,7 +15,7 @@ namespace Postgres.NET.Tests
         {
             using var schemaUpdater = new SchemaUpdater(new NpgsqlConnection(ConnectionString));
 
-            Assert.NotEqual(0, schemaUpdater.CreateTable("testTable"));
+            Assert.NotEqual(0, schemaUpdater.CreateTable("testTable", "id"));
         }
     }
 }
