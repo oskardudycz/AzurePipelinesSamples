@@ -96,8 +96,8 @@ jobs:
   #   JOB 6: Publish NuGet
   #####################################################
   - template: jobs/job_publish_nuget.yml
-    condition: and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
     parameters:
       name: Publish_NuGet
       dependsOn: Contract_tests
       nugetVersion: $(NugetVersion)
+    condition: and(succeeded(), variables['Build.SourceBranch'], 'refs/heads/master')
