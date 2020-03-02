@@ -1,0 +1,21 @@
+# Build image
+FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS builder
+WORKDIR /app
+
+# Copy files
+COPY . ./
+
+RUN dotnet restore
+RUN dotnet build -c Release --no-restore
+RUN dotnet test -c Release
+
+WORKDIR /app/WebApi/
+RUN dotnet publish -c Release -o out
+
+# Build runtime image
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+WORKDIR /app
+COPY --from=builder /app/WebApi/out .
+ENV ASPNETCORE_URLS="http://*:5000"
+ENV ASPNETCORE_ENVIRONMENT=Development
+ENTRYPOINT ["dotnet", "WebApi.dll"]
