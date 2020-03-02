@@ -7,7 +7,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{FDD1FE51-B834-46F3-AC9C-4E857E40C629}"
 ProjectSection(SolutionItems) = preProject
 	azure-pipelines.yml = azure-pipelines.yml
-	steps-compatibility-check.yml = steps-compatibility-check.yml
+EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "jobs", "jobs", "{3330F457-1546-4AB5-AA74-9359D4CDBB54}"
+ProjectSection(SolutionItems) = preProject
+	jobs\job_1_build_with_multiple_os.yml = jobs\job_1_build_with_multiple_os.yml
+	jobs\job_2_test_with_different_postgres_versions.yml = jobs\job_2_test_with_different_postgres_versions.yml
+	jobs\job_contract_tests_with_client_apps.yml = jobs\job_contract_tests_with_client_apps.yml
+	jobs\job_publish_nuget.yml = jobs\job_publish_nuget.yml
 EndProjectSection
 EndProject
 Global
@@ -24,5 +31,8 @@ Global
 		{A007B5A4-1B23-4244-942C-2CC30D62DC7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A007B5A4-1B23-4244-942C-2CC30D62DC7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A007B5A4-1B23-4244-942C-2CC30D62DC7F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3330F457-1546-4AB5-AA74-9359D4CDBB54} = {FDD1FE51-B834-46F3-AC9C-4E857E40C629}
 	EndGlobalSection
 EndGlobal
