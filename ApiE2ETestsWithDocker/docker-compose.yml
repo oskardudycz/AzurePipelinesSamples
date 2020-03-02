@@ -1,0 +1,12 @@
+version: "2.1"
+services:
+    backend: 
+        build:
+            dockerfile: DOCKERFILE
+            context: .
+        container_name: web_api_sample
+        ports:
+            - "5000:5000"
+        depends_on:
+          postgres:
+            condition: service_healthy
