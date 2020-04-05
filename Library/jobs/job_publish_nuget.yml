@@ -1,24 +1,24 @@
 parameters:
-  
+
   - name: name
     type: string
     default: 'Publish_NuGet'
 
   - name: dependsOn
-    default: any  
+    default: any
 
   - name: nugetVersionEnv
     type: string
 
   - name: condition
-    default: succeeded()  
-  
+    default: succeeded()
+
   - name: buildConfig
-    default: Release 
+    default: Release
 
 jobs:
   ####################################################
-  #   JOB 3: Publish Pre-release NuGet
+  #   JOB: Publish NuGet
   ####################################################
   - job: ${{ parameters.name }}
     dependsOn: ${{ parameters.dependsOn }}
