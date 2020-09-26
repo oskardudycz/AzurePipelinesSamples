@@ -5,7 +5,7 @@ trigger:
   batch: true
   branches:
     include:
-      - master
+      - main
   
   paths:
     include:
@@ -13,7 +13,7 @@ trigger:
 pr:
   branches:
     include:
-      - master
+      - main
   
   paths:
     include:
@@ -104,4 +104,4 @@ jobs:
       name: Publish_NuGet
       dependsOn: Contract_tests
       nugetVersionEnv: 'NugetVersion'
-      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+      condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
