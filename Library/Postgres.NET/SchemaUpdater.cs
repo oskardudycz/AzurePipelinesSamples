@@ -13,10 +13,10 @@ namespace Postgres.NET
             this.databaseConnection = databaseConnection;
         }
 
-        public int CreateTable(string tableName)
+        public int CreateTable(string tableName, string idColumnName)
         {
             return databaseConnection.Execute(
-                $"CREATE TABLE {tableName} ( id serial PRIMARY KEY );");
+                $"CREATE TABLE {tableName} ( {idColumnName} serial PRIMARY KEY );");
         }
 
         public void Dispose()
